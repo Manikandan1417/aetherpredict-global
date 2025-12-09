@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # FRONTEND: Vite/React App
+  aether-shield-app:
+    build: .
+    container_name: aether-shield-frontend
+    ports:
+      - "3000:80"
+    restart: always
+    environment:
+      - REACT_APP_GEMINI_API_KEY=${GEMINI_API_KEY}
+    networks:
+      - shield-net
+
+  # MOCK BACKEND: Python FastAPI (Conceptual for Demo)
+  aether-shield-api:
+    image: tiangolo/uvicorn-gunicorn-fastapi:python3.9
+    container_name: aether-shield-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - DB_URL=postgresql://user:pass@db:5432/shield_db
+    networks:
+      - shield-net
+    depends_on:
+      - db
+      - redis
+
+  # DATABASE: PostgreSQL for Timelines/Logs
+  db:
+    image: postgres:15-alpine
+    container_name: shield-postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=shield_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - shield-net
+
+  # CACHE: Redis for Cyclone Track Caching
+  redis:
+    image: redis:alpine
+    container_name: shield-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - shield-net
+
+networks:
+  shield-net:
+    driver: bridge
+
+volumes:
+  postgres_data:

@@ -1,0 +1,8 @@
+{
+  "name": "Copy of AetherPredict Shield AI",
+  "description": "Next-gen disaster prediction dashboard featuring probabilistic cyclone tracking, district risk analysis, and AI-powered insights for Cyclone Ditwah 2025.",
+  "requestFramePermissions": [
+    "microphone",
+    "geolocation"
+  ]
+}
